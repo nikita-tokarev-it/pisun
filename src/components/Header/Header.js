@@ -1,17 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css';
-import { dfoRegions } from './RussiaMapData';
+import { getMapData } from '../../api/map';
 import { russiaMapPaths } from './RussiaMapPaths';
 import { russiaMapRegions } from './RussiaMapRegions';
 
 const Header = () => {
+  const [dfoRegions, setDfoRegions] = useState({});
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [tooltipData, setTooltipData] = useState({ show: false, name: '', x: 0, y: 0 });
   const [hoveredRegion, setHoveredRegion] = useState(null);
 
   // DFO region codes for highlighting
-  const dfoRegionCodes = ['RU-SA', 'RU-KHA', 'RU-PRI', 'RU-AMU', 'RU-KAM', 'RU-SAK', 'RU-MAG', 'RU-CHU', 'RU-YEV'];
+  const dfoRegionCodes = ['RU-SA', 'RU-KHA', 'RU-PRI', 'RU-AMU', 'RU-KAM', 'RU-SAK', 'RU-MAG', 'RU-CHU', 'RU-YEV', 'RU-ZAB'];
+
+  useEffect(() => {
+    const loadMapData = async () => {
+      try {
+        const data = await getMapData();
+        const regionsMap = data.reduce((acc, region) => {
+          acc[region.id] = region;
+          return acc;
+        }, {});
+        setDfoRegions(regionsMap);
+      } catch (err) {
+        console.error('Ошибка загрузки данных карты:', err);
+      }
+    };
+    loadMapData();
+  }, []);
 
   const handleRegionClick = (regionCode) => {
     const region = dfoRegions[regionCode];
@@ -164,7 +181,7 @@ const Header = () => {
           <p className="header-description">
             Совет ректоров вузов Дальневосточного федерального округа создан 
             для содействия развитию образования, науки и культуры Дальневосточного 
-            региона России и координации действий высших учебных заведений ДФО.
+            региона России и координации действий высших учебных заведений Дальневосточного федерального округа.
           </p>
           
           <Link to="/about" className="read-more-btn">

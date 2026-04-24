@@ -7,7 +7,9 @@ import Home from './pages/Home/Home';
 import About from './pages/About/About';
 import Documents from './pages/Documents/Documents';
 import Events from './pages/Events/Events';
+import EventDetail from './pages/Events/EventDetail';
 import Press from './pages/Press/Press';
+import PressDetail from './pages/Press/PressDetail';
 import Contacts from './pages/Contacts/Contacts';
 import Login from './pages/Login/Login';
 import Dashboard from './pages/Admin/Dashboard/Dashboard';
@@ -16,18 +18,23 @@ import EventForm from './pages/Admin/EventsManager/EventForm';
 import PressManager from './pages/Admin/PressManager/PressManager';
 import DocumentsManager from './pages/Admin/DocumentsManager/DocumentsManager';
 import UsersManager from './pages/Admin/UsersManager/UsersManager';
+import SettingsManager from './pages/Admin/SettingsManager/SettingsManager';
+import CouncilsManager from './pages/Admin/CouncilsManager/CouncilsManager';
 import './App.css';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public routes */}
+        {/* ... (Public routes) ... */}
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/about" element={<Layout><About /></Layout>} />
         <Route path="/documents" element={<Layout><Documents /></Layout>} />
         <Route path="/events" element={<Layout><Events /></Layout>} />
+        <Route path="/events/:id" element={<Layout><EventDetail /></Layout>} />
         <Route path="/press" element={<Layout><Press /></Layout>} />
+        <Route path="/press/release/:id" element={<Layout><PressDetail /></Layout>} />
+        <Route path="/press/announcement/:id" element={<Layout><PressDetail /></Layout>} />
         <Route path="/contacts" element={<Layout><Contacts /></Layout>} />
         <Route path="/login" element={<Layout><Login /></Layout>} />
 
@@ -67,9 +74,20 @@ function App() {
             <AdminLayout><UsersManager /></AdminLayout>
           </ProtectedRoute>
         } />
+        <Route path="/admin/settings" element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminLayout><SettingsManager /></AdminLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/councils" element={
+          <ProtectedRoute allowedRoles={['editor', 'admin']}>
+            <AdminLayout><CouncilsManager /></AdminLayout>
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   );
 }
+
 
 export default App;

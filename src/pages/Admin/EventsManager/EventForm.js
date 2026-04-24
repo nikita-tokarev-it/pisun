@@ -102,11 +102,10 @@ const EventForm = () => {
           <div className="form-group">
             <label>Дата</label>
             <input
-              type="text"
+              type="date"
               name="date"
               value={form.date}
               onChange={handleChange}
-              placeholder="15 ноября 2024"
               required
             />
           </div>
@@ -124,12 +123,22 @@ const EventForm = () => {
         </div>
 
         <div className="form-group">
-          <label>Описание</label>
+          <label>Краткое описание</label>
           <textarea
             name="description"
             value={form.description}
             onChange={handleChange}
-            rows={5}
+            rows={3}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Полный текст</label>
+          <textarea
+            name="fullContent"
+            value={form.fullContent}
+            onChange={handleChange}
+            rows={10}
           />
         </div>
 

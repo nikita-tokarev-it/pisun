@@ -79,6 +79,14 @@ const Dashboard = () => {
           <div className="stat-number">{stats.documents}</div>
           <div className="stat-label">Документы</div>
         </Link>
+        <Link to="/admin/councils" className="stat-card">
+          <div className="stat-number">Управление</div>
+          <div className="stat-label">Составы советов</div>
+        </Link>
+        <Link to="/admin/settings" className="stat-card">
+          <div className="stat-number">CMS</div>
+          <div className="stat-label">Настройки контента</div>
+        </Link>
       </div>
     </div>
   );

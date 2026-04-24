@@ -6,7 +6,7 @@ export async function getEvents() {
 }
 
 export async function getEventById(id) {
-  const response = await client.get(`/events?id=${id}`);
+  const response = await client.get(`/events/${id}`);
   return response.data;
 }
 
@@ -21,11 +21,11 @@ export async function createEvent(data) {
 }
 
 export async function updateEvent(id, data) {
-  const response = await client.put(`/admin/events?id=${id}`, data);
+  const response = await client.put(`/admin/events/${id}`, data);
   return response.data;
 }
 
 export async function deleteEvent(id) {
-  const response = await client.delete(`/admin/events?id=${id}`);
+  const response = await client.delete(`/admin/events/${id}`);
   return response.data;
 }

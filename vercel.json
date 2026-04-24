@@ -13,14 +13,29 @@
       "use": "@vercel/node"
     }
   ],
-  "routes": [
+  "headers": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+      ]
     }
+  ],
+  "rewrites": [
+    { "source": "/api/imgur/:path*", "destination": "https://i.imgur.com/:path*" },
+    { "source": "/api/events/:id", "destination": "/api/events.js?id=:id" },
+    { "source": "/api/press-releases/:id", "destination": "/api/press-releases.js?id=:id" },
+    { "source": "/api/announcements/:id", "destination": "/api/announcements.js?id=:id" },
+    { "source": "/api/admin/events/:id", "destination": "/api/admin/events.js?id=:id" },
+    { "source": "/api/admin/press-releases/:id", "destination": "/api/admin/press-releases.js?id=:id" },
+    { "source": "/api/admin/announcements/:id", "destination": "/api/admin/announcements.js?id=:id" },
+    { "source": "/api/admin/photos/:id", "destination": "/api/admin/photos.js?id=:id" },
+    { "source": "/api/admin/videos/:id", "destination": "/api/admin/videos.js?id=:id" },
+    { "source": "/api/admin/documents/:id", "destination": "/api/admin/documents.js?id=:id" },
+    { "source": "/api/admin/users/:id", "destination": "/api/admin/users.js?id=:id" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

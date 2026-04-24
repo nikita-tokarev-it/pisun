@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAdminDocuments, createDocument, updateDocument, deleteDocument } from '../../../api/documents';
+import { formatDate } from '../../../utils/formatters';
 import '../EventsManager/EventsManager.css';
 
 const CATEGORIES = ['История', 'Учредительные документы', 'Решения Совета'];
@@ -112,7 +113,7 @@ const DocumentsManager = () => {
               </div>
               <div className="form-group">
                 <label>Дата</label>
-                <input type="text" name="date" value={form.date} onChange={handleChange} placeholder="2024" />
+                <input type="date" name="date" value={form.date} onChange={handleChange} />
               </div>
             </div>
             <div className="form-group checkbox-group">
@@ -145,7 +146,7 @@ const DocumentsManager = () => {
               <tr key={doc.id}>
                 <td className="title-cell">{doc.title}</td>
                 <td>{doc.category}</td>
-                <td>{doc.date}</td>
+                <td>{formatDate(doc.date)}</td>
                 <td>
                   <span className={`status-badge ${doc.published ? 'published' : 'draft'}`}>
                     {doc.published ? 'Опубликовано' : 'Черновик'}

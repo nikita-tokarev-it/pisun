@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getEvents } from '../../api/events';
+import { formatDate } from '../../utils/formatters';
 import './Events.css';
 
 const Events = () => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState('all');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,10 +72,14 @@ const Events = () => {
               </span>
             </div>
             <div className="event-content">
-              <p className="event-date">{item.date}</p>
-              <h2 className="event-title">{item.title}</h2>
-              <p className="event-description">{item.description}</p>
-              <button className="read-more">Читать полностью</button>
+              <p className="event-date">{formatDate(item.date)}</p>
+              <h2 className="event-title">{item.title}</h2>              <p className="event-description">{item.description}</p>
+              <button 
+                className="read-more"
+                onClick={() => navigate(`/events/${item.id}`)}
+              >
+                Читать полностью
+              </button>
             </div>
           </article>
         ))}

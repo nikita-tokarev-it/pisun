@@ -1,20 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getSettings } from '../../api/settings';
 import './Footer.css';
 
 const Footer = () => {
+  const [footerInfo, setFooterInfo] = useState(null);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const data = await getSettings();
+        setFooterInfo(data.footer);
+      } catch (err) {
+        console.error('Ошибка загрузки футера:', err);
+      }
+    };
+    loadSettings();
+  }, []);
+
   return (
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-section">
           <h3>Совет ректоров вузов ДФО</h3>
-          <p>© {new Date().getFullYear()} Все права защищены</p>
+          <p>© {new Date().getFullYear()} {footerInfo?.copyright || 'Все права защищены'}</p>
         </div>
 
         <div className="footer-section">
           <h4>Контакты</h4>
-          <p>Email: info@dvfu-rectorat.ru</p>
-          <p>Телефон: +7 (423) 000-00-00</p>
+          <p>Email: {footerInfo?.email || 'info@dvfu-rectorat.ru'}</p>
+          <p>Телефон: {footerInfo?.phone || '+7 (423) 000-00-00'}</p>
         </div>
 
         <div className="footer-section">

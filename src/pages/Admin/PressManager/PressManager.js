@@ -5,6 +5,7 @@ import {
   getAdminPhotos, createPhoto, updatePhoto, deletePhoto,
   getAdminVideos, createVideo, updateVideo, deleteVideo,
 } from '../../../api/press';
+import { formatDate } from '../../../utils/formatters';
 import '../EventsManager/EventsManager.css';
 import './PressManager.css';
 
@@ -161,15 +162,25 @@ const PressManager = () => {
                     Опубликовано
                   </label>
                 </div>
-              ) : field === 'content' ? (
+              ) : (field === 'description' || field === 'fullContent') ? (
                 <div key={field} className="form-group">
                   <label>{fieldLabels[field]}</label>
-                  <textarea name={field} value={form[field] || ''} onChange={handleChange} rows={4} />
+                  <textarea 
+                    name={field} 
+                    value={form[field] || ''} 
+                    onChange={handleChange} 
+                    rows={field === 'fullContent' ? 8 : 3} 
+                  />
                 </div>
               ) : (
                 <div key={field} className="form-group">
                   <label>{fieldLabels[field]}</label>
-                  <input type="text" name={field} value={form[field] || ''} onChange={handleChange} />
+                  <input 
+                    type={field === 'date' ? 'date' : 'text'} 
+                    name={field} 
+                    value={form[field] || ''} 
+                    onChange={handleChange} 
+                  />
                 </div>
               )
             ))}
@@ -198,7 +209,7 @@ const PressManager = () => {
               {items.map(item => (
                 <tr key={item.id}>
                   <td className="title-cell">{item.title}</td>
-                  <td>{item.date}</td>
+                  <td>{formatDate(item.date)}</td>
                   <td>
                     <span className={`status-badge ${item.published ? 'published' : 'draft'}`}>
                       {item.published ? 'Опубликовано' : 'Черновик'}

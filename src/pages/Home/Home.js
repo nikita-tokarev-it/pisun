@@ -1,59 +1,62 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getEvents } from '../../api/events';
+import { getSettings } from '../../api/settings';
+import { formatDate } from '../../utils/formatters';
 import './Home.css';
 
 const Home = () => {
   const [news, setNews] = useState([]);
+  const [greeting, setGreeting] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const loadNews = async () => {
+    const loadData = async () => {
       try {
-        const data = await getEvents();
-        setNews(data.slice(0, 3));
+        const [newsData, settingsData] = await Promise.all([
+          getEvents(),
+          getSettings()
+        ]);
+        setNews(newsData.slice(0, 3));
+        setGreeting(settingsData.rectorGreeting);
       } catch (err) {
-        console.error('Ошибка загрузки новостей:', err);
+        console.error('Ошибка загрузки данных:', err);
+      } finally {
+        setLoading(false);
       }
     };
-    loadNews();
+    loadData();
   }, []);
+
+  if (loading) return <div className="loading">Загрузка...</div>;
 
   return (
     <div className="home">
-      <section className="greeting-section">
-        <div className="greeting-content">
-          <div className="rector-photo">
-            <img
-              src="https://via.placeholder.com/400x500/2B5A8E/FFFFFF?text=Председатель+Совета"
-              alt="Председатель Совета ректоров вузов ДФО"
-            />
+      {greeting && (
+        <section className="greeting-section">
+          <div className="greeting-content">
+            <div className="rector-photo">
+              <img
+                src={greeting.photo}
+                alt="Председатель Совета"
+              />
+            </div>
+
+            <div className="greeting-text">
+              <h2 className="greeting-title">{greeting.title}</h2>
+
+              {greeting.paragraphs.map((p, idx) => (
+                <p key={idx} className="greeting-paragraph">{p}</p>
+              ))}
+
+              <p className="greeting-signature">
+                {greeting.signature}
+              </p>
+            </div>
           </div>
-
-          <div className="greeting-text">
-            <h2 className="greeting-title">Уважаемые коллеги!</h2>
-
-            <p className="greeting-paragraph">
-              Приходит самый любимый, светлый и долгожданный праздник в нашей стране –
-              Новый год!
-            </p>
-
-            <p className="greeting-paragraph">
-              Именно сегодня закладываются смыслы и задачи, которые будут актуальны на
-              протяжении десятилетий. Уверен, что в 2024 году нам удастся закрепить
-              достижения последних лет и обязательно сделать следующий шаг.
-            </p>
-
-            <p className="greeting-paragraph">
-              От всей души желаю, чтобы новый год принёс удачу, подарил хорошее настроение, и
-              чтобы воплотились в жизнь самые заветные мечты! Пусть работа всегда идёт
-              гладко, а рядом будут надёжные единомышленники.
-            </p>
-
-            <p className="greeting-signature">
-              Счастья Вам, крепкого здоровья и благополучия! С Новым годом!
-            </p>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="news-section">
         <h2 className="section-title">Мероприятия и новости</h2>
@@ -66,8 +69,14 @@ const Home = () => {
               </div>
               <div className="news-content">
                 <h3>{item.title}</h3>
-                <p className="news-date">{item.date}</p>
+                <p className="news-date">{formatDate(item.date)}</p>
                 <p>{item.description}</p>
+                <button
+                  className="read-more-btn"
+                  onClick={() => navigate(`/events/${item.id}`)}
+                >
+                  Читать полностью
+                </button>
               </div>
             </article>
           ))}

@@ -78,7 +78,7 @@
   display: flex;
   gap: 30px;
   margin-bottom: 30px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
 }
 
@@ -122,14 +122,14 @@
 }
 
 .map-region--dfo {
-  fill: #2b5a8e;
+  fill: #8e2b2b;
   stroke: #1e3a52;
   cursor: pointer;
 }
 
 .map-region--dfo:hover,
 .map-region--dfo:focus-visible {
-  fill: #1f6ac1;
+  fill: #c11f1f;
 }
 
 .map-region--dfo:focus-visible {

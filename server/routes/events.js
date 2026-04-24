@@ -38,6 +38,7 @@ adminRouter.post('/', (req, res) => {
     date: req.body.date,
     image: req.body.image || '',
     description: req.body.description || '',
+    fullContent: req.body.fullContent || '',
     published: req.body.published !== undefined ? req.body.published : true,
     createdAt: now,
     updatedAt: now,

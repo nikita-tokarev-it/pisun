@@ -11,11 +11,11 @@ export async function createUser(data) {
 }
 
 export async function updateUser(id, data) {
-  const response = await client.put(`/admin/users?id=${id}`, data);
+  const response = await client.put(`/admin/users/${id}`, data);
   return response.data;
 }
 
 export async function deleteUser(id) {
-  const response = await client.delete(`/admin/users?id=${id}`);
+  const response = await client.delete(`/admin/users/${id}`);
   return response.data;
 }

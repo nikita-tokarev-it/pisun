@@ -74,7 +74,7 @@
   display: flex;
   justify-content: center;
   gap: 30px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .structure-item {
@@ -148,6 +148,20 @@
 
 .data-table tbody tr:hover {
   background-color: #f5f5f5;
+}
+
+.council-group {
+  margin-bottom: 40px;
+}
+
+.council-group-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e4976;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2B5A8E;
+  display: inline-block;
 }
 
 .data-table tbody tr:last-child td {

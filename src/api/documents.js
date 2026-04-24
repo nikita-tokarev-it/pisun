@@ -16,11 +16,11 @@ export async function createDocument(data) {
 }
 
 export async function updateDocument(id, data) {
-  const response = await client.put(`/admin/documents?id=${id}`, data);
+  const response = await client.put(`/admin/documents/${id}`, data);
   return response.data;
 }
 
 export async function deleteDocument(id) {
-  const response = await client.delete(`/admin/documents?id=${id}`);
+  const response = await client.delete(`/admin/documents/${id}`);
   return response.data;
 }

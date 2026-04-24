@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getDocuments } from '../../api/documents';
+import { formatDate } from '../../utils/formatters';
 import './Documents.css';
 
 const Documents = () => {
@@ -67,7 +68,7 @@ const Documents = () => {
                 </div>
                 <div className="document-info">
                   <h3 className="document-title">{doc.title}</h3>
-                  <p className="document-date">Дата: {doc.date}</p>
+                  <p className="document-date">Дата: {formatDate(doc.date)}</p>
                 </div>
                 <button className="download-btn">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

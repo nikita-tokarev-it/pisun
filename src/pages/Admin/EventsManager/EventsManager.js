@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAdminEvents, deleteEvent } from '../../../api/events';
+import { formatDate } from '../../../utils/formatters';
 import './EventsManager.css';
 
 const EventsManager = () => {
@@ -62,7 +63,7 @@ const EventsManager = () => {
                     {event.type === 'event' ? 'Мероприятие' : 'Новость'}
                   </span>
                 </td>
-                <td>{event.date}</td>
+                <td>{formatDate(event.date)}</td>
                 <td>
                   <span className={`status-badge ${event.published ? 'published' : 'draft'}`}>
                     {event.published ? 'Опубликовано' : 'Черновик'}

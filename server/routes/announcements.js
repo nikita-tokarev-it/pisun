@@ -11,6 +11,13 @@ router.get('/', (req, res) => {
   res.json(db.announcements.filter(i => i.published));
 });
 
+router.get('/:id', (req, res) => {
+  const db = readDb();
+  const item = db.announcements.find(i => i.id === req.params.id && i.published);
+  if (!item) return res.status(404).json({ error: 'Не найдено' });
+  res.json(item);
+});
+
 adminRouter.use(authMiddleware, roleMiddleware(['editor', 'admin']));
 
 adminRouter.get('/', (req, res) => {
@@ -25,7 +32,8 @@ adminRouter.post('/', (req, res) => {
     id: uuidv4(),
     title: req.body.title,
     date: req.body.date,
-    content: req.body.content || '',
+    description: req.body.description || '',
+    fullContent: req.body.fullContent || '',
     published: req.body.published !== undefined ? req.body.published : true,
     createdAt: now,
     updatedAt: now,
