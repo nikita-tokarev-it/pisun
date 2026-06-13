@@ -93,33 +93,6 @@ const Contacts = () => {
           </div>
         </section>
       )}
-      
-      <section className="regional-section">
-        <h2 className="section-title">Региональные советы ректоров</h2>
-        <div className="regional-grid">
-          {regionalCouncils.map((council, index) => (
-            <div key={index} className="contact-card">
-              <h3>{council.region}</h3>
-              <p className="organization-name">{council.organization}</p>
-              
-              <div className="contact-info">
-                <div className="info-item">
-                  <strong>Председатель:</strong>
-                  <span>{council.chairman}</span>
-                </div>
-                <div className="info-item">
-                  <strong>Телефон:</strong>
-                  <span>{council.phone}</span>
-                </div>
-                <div className="info-item">
-                  <strong>Email:</strong>
-                  <span>{council.email}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   );
 };
