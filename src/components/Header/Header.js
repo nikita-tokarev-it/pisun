@@ -4,30 +4,37 @@ import './Header.css';
 import { getMapData } from '../../api/map';
 import { russiaMapPaths } from './RussiaMapPaths';
 import { russiaMapRegions } from './RussiaMapRegions';
+import { getSettings } from '../../api/settings';
 
 const Header = () => {
   const [dfoRegions, setDfoRegions] = useState({});
   const [selectedRegion, setSelectedRegion] = useState(null);
+  const [isPressModalOpen, setIsPressModalOpen] = useState(false);
   const [tooltipData, setTooltipData] = useState({ show: false, name: '', x: 0, y: 0 });
   const [hoveredRegion, setHoveredRegion] = useState(null);
+  const [settings, setSettings] = useState(null);
 
   // DFO region codes for highlighting
   const dfoRegionCodes = ['RU-SA', 'RU-KHA', 'RU-PRI', 'RU-AMU', 'RU-KAM', 'RU-SAK', 'RU-MAG', 'RU-CHU', 'RU-YEV', 'RU-ZAB'];
 
   useEffect(() => {
-    const loadMapData = async () => {
+    const loadData = async () => {
       try {
-        const data = await getMapData();
-        const regionsMap = data.reduce((acc, region) => {
+        const [mapData, settingsData] = await Promise.all([
+          getMapData(),
+          getSettings()
+        ]);
+        const regionsMap = mapData.reduce((acc, region) => {
           acc[region.id] = region;
           return acc;
         }, {});
         setDfoRegions(regionsMap);
+        setSettings(settingsData);
       } catch (err) {
-        console.error('Ошибка загрузки данных карты:', err);
+        console.error('Ошибка загрузки данных:', err);
       }
     };
-    loadMapData();
+    loadData();
   }, []);
 
   const handleRegionClick = (regionCode) => {
@@ -38,26 +45,19 @@ const Header = () => {
   };
 
   const handleRegionKeyDown = (event, regionCode) => {
-    if (!dfoRegions[regionCode]) {
-      return;
-    }
+    if (!dfoRegions[regionCode]) return;
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       handleRegionClick(regionCode);
     }
   };
 
-  const closeModal = () => {
-    setSelectedRegion(null);
-  };
+  const closeModal = () => setSelectedRegion(null);
+  const closePressModal = () => setIsPressModalOpen(false);
 
   const getRegionName = (code) => {
-    if (dfoRegions[code]?.name) {
-      return dfoRegions[code].name;
-    }
-    if (russiaMapRegions[code]?.name) {
-      return russiaMapRegions[code].name;
-    }
+    if (dfoRegions[code]?.name) return dfoRegions[code].name;
+    if (russiaMapRegions[code]?.name) return russiaMapRegions[code].name;
     return code;
   };
 
@@ -112,13 +112,14 @@ const Header = () => {
       const isSelected = selectedRegion?.code === code;
       const isHovered = hoveredRegion === code;
 
-      const baseFill = isDFO ? '#2B5A8E' : '#D7DEE9';
-      const hoverFill = isDFO ? '#1f6ac1' : '#f6e72d';
-      const fill = isSelected ? '#153a5b' : isHovered ? hoverFill : baseFill;
+      // Strict Red for DFO active zones as requested
+      const baseFill = isDFO ? '#C12A2A' : '#D7DEE9';
+      const hoverFill = isDFO ? '#E33434' : '#E3B04B';
+      const fill = isSelected ? '#991B1B' : isHovered ? hoverFill : baseFill;
 
       const inlineStyle = pathData.style ? parseInlineStyle(pathData.style) : {};
-      const stroke = pathData.stroke || '#666666';
-      const strokeWidth = pathData['stroke-width'] || '0.6';
+      const stroke = pathData.stroke || '#1A3A5F';
+      const strokeWidth = pathData['stroke-width'] || (isDFO ? '1' : '0.5');
 
       const pathProps = {
         key: code,
@@ -130,8 +131,8 @@ const Header = () => {
         className: `map-region${isDFO ? ' map-region--dfo' : ''}`,
         style: {
           ...inlineStyle,
-          transition: 'fill 0.3s ease, opacity 0.3s ease',
-          cursor: isDFO ? 'pointer' : 'default'
+          transition: 'fill 0.2s ease',
+          cursor: isDFO ? 'pointer' : 'inherit'
         },
         onMouseEnter: (event) => handleRegionMouseEnter(event, code),
         onMouseMove: (event) => handleRegionMouseMove(event, code),
@@ -139,15 +140,9 @@ const Header = () => {
         role: isDFO ? 'button' : 'presentation'
       };
 
-      if (pathData['stroke-linejoin']) {
-        pathProps.strokeLinejoin = pathData['stroke-linejoin'];
-      }
-      if (pathData['stroke-linecap']) {
-        pathProps.strokeLinecap = pathData['stroke-linecap'];
-      }
-      if (pathData['stroke-miterlimit']) {
-        pathProps.strokeMiterlimit = pathData['stroke-miterlimit'];
-      }
+      if (pathData['stroke-linejoin']) pathProps.strokeLinejoin = pathData['stroke-linejoin'];
+      if (pathData['stroke-linecap']) pathProps.strokeLinecap = pathData['stroke-linecap'];
+      if (pathData['stroke-miterlimit']) pathProps.strokeMiterlimit = pathData['stroke-miterlimit'];
 
       if (isDFO) {
         pathProps.onClick = () => handleRegionClick(code);
@@ -161,40 +156,57 @@ const Header = () => {
 
   return (
     <header className="header">
-      <div className="header-content">
-        <div className="header-left">
+      <div className="top-bar">
+        <div className="top-bar-content">
           <a 
-            href="https://www.rsr-online.ru/" 
+            href={settings?.header?.rsrUrl || "https://www.rsr-online.ru/"} 
             target="_blank" 
             rel="noopener noreferrer"
             className="rsr-link"
           >
-            РОССИЙСКИЙ СОЮЗ РЕКТОРОВ
+            {settings?.header?.rsrText || "РОССИЙСКИЙ СОЮЗ РЕКТОРОВ"}
           </a>
-          
-          <h1 className="header-title">
-            СОВЕТ РЕКТОРОВ ВУЗОВ<br />
-            ДАЛЬНЕВОСТОЧНОГО<br />
-            ФЕДЕРАЛЬНОГО ОКРУГА
-          </h1>
-          
-          <p className="header-description">
-            Совет ректоров вузов Дальневосточного федерального округа создан 
-            для содействия развитию образования, науки и культуры Дальневосточного 
-            региона России и координации действий высших учебных заведений Дальневосточного федерального округа.
-          </p>
+
+          <nav className="main-nav">
+            {settings?.navigation ? settings.navigation.map((item, idx) => (
+              item.path === '/press' ? (
+                <button 
+                  key={idx} 
+                  className="nav-link nav-button" 
+                  onClick={() => setIsPressModalOpen(true)}
+                >
+                  {item.title}
+                </button>
+              ) : (
+                <Link key={idx} to={item.path} className="nav-link">{item.title}</Link>
+              )
+            )) : (
+              <>
+                <Link to="/" className="nav-link">ГЛАВНАЯ</Link>
+                <Link to="/about" className="nav-link">О СОВЕТЕ</Link>
+                <Link to="/documents" className="nav-link">ДОКУМЕНТЫ</Link>
+                <Link to="/events" className="nav-link">МЕРОПРИЯТИЯ И НОВОСТИ</Link>
+                <button 
+                  className="nav-link nav-button" 
+                  onClick={() => setIsPressModalOpen(true)}
+                >
+                  ДЛЯ ПРЕССЫ
+                </button>
+                <Link to="/contacts" className="nav-link">КОНТАКТЫ</Link>
+              </>
+            )}
+          </nav>
+        </div>
+      </div>
+
+      <div className="header-content">
+        <div className="header-left">
+          <h1 className="header-title" dangerouslySetInnerHTML={{ 
+            __html: settings?.header?.title ? settings.header.title.replace(/\n/g, '<br />') : 'СОВЕТ РЕКТОРОВ ВУЗОВ<br />ДАЛЬНЕВОСТОЧНОГО<br />ФЕДЕРАЛЬНОГО ОКРУГА' 
+          }} />
         </div>
         
         <div className="header-right">
-          <nav className="main-nav">
-            <Link to="/" className="nav-link">ГЛАВНАЯ</Link>
-            <Link to="/about" className="nav-link">О СОВЕТЕ</Link>
-            <Link to="/documents" className="nav-link">ДОКУМЕНТЫ</Link>
-            <Link to="/events" className="nav-link">МЕРОПРИЯТИЯ И НОВОСТИ</Link>
-            <Link to="/press" className="nav-link">ДЛЯ ПРЕССЫ</Link>
-            <Link to="/contacts" className="nav-link">КОНТАКТЫ</Link>
-          </nav>
-          
           <div className="map-container">
             <div className="rf-map">
               <svg
@@ -204,7 +216,9 @@ const Header = () => {
                 role="img"
                 aria-label="Карта Российской Федерации"
               >
-                <g id="russia-map">{renderMapPaths()}</g>
+                <g id="russia-map">
+                  {renderMapPaths()}
+                </g>
               </svg>
 
               {tooltipData.show && (
@@ -246,6 +260,36 @@ const Header = () => {
                         Официальный сайт региона →
                       </a>
                     )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {isPressModalOpen && (
+              <div className="region-modal-overlay" onClick={closePressModal}>
+                <div className="region-modal press-modal" onClick={(e) => e.stopPropagation()}>
+                  <button className="region-modal-close" onClick={closePressModal}>×</button>
+                  <h2>Контакты для СМИ</h2>
+                  <div className="region-modal-content">
+                    <div className="press-contact-card">
+                      <h3>Пресс-служба Совета ректоров вузов ДФО</h3>
+                      <div className="press-contact-item">
+                        <strong>Ответственный:</strong>
+                        <p>Подтергера Ольга Александровна</p>
+                      </div>
+                      <div className="press-contact-item">
+                        <strong>Телефон:</strong>
+                        <p>+7 (908) 450-85-25</p>
+                      </div>
+                      <div className="press-contact-item">
+                        <strong>Email:</strong>
+                        <p>press@dvfu-rectorat.ru</p>
+                      </div>
+                      <div className="press-contact-item">
+                        <strong>Время работы:</strong>
+                        <p>Пн-Пт: 9:00 - 18:00</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

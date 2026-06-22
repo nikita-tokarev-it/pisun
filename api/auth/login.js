@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { readDb } = require('../../lib/db');
+const { db } = require('../../lib/db');
 const { createToken } = require('../../lib/auth');
 
 module.exports = async (req, res) => {
@@ -23,8 +23,7 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Введите имя пользователя и пароль' });
     }
 
-    const db = readDb();
-    const user = db.users.find(u => u.username === username);
+    const user = await db.getUserByUsername(username);
 
     if (!user) {
       return res.status(401).json({ error: 'Неверные учётные данные' });

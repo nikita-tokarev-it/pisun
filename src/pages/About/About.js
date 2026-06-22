@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getCouncils } from '../../api/councils';
+import { getSettings } from '../../api/settings';
 import './About.css';
 
 const About = () => {
@@ -10,6 +11,7 @@ const About = () => {
   const [showPrezidium, setShowPrezidium] = useState(false);
   const [councilMembers, setCouncilMembers] = useState([]);
   const [regionalCouncils, setRegionalCouncils] = useState([]);
+  const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const toggleRegion = (regionName) => {
@@ -31,7 +33,7 @@ const About = () => {
     ),
     "Приморский край": (
       <>
-        <p><strong>Председатель:</strong> Стегний Кирилл Владимирович, и.о. ректора Тихоокеанского государственного медицинского университета</p>
+        <p><strong>Председатель:</strong> Шуматов Валентин Борисович, и.о. ректора Тихоокеанского государственного медицинского университета</p>
         <p><em>8 (423) 242-97-78 &nbsp; mail@tgmu.ru</em></p>
         <p><strong>Ученый секретарь:</strong> Транковская Лидия Викторовна, первый проректор Тихоокеанского государственного медицинского университета</p>
         <p><strong>Сайт:</strong> <a href="https://sovetrektorovpk.ru/" target="_blank" rel="noopener noreferrer">https://sovetrektorovpk.ru/</a></p>
@@ -79,9 +81,24 @@ const About = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await getCouncils();
-        setCouncilMembers(data.councils || []);
-        setRegionalCouncils(data.regionalCouncils || []);
+        const [councilsData, settingsData] = await Promise.all([
+          getCouncils(),
+          getSettings()
+        ]);
+        
+        // Sort both by group_position then position
+        const sortedMain = (councilsData.councils || []).sort((a, b) => {
+          if ((a.group_position || 0) !== (b.group_position || 0)) return (a.group_position || 0) - (b.group_position || 0);
+          return (a.position || 0) - (b.position || 0);
+        });
+        const sortedRegional = (councilsData.regionalCouncils || []).sort((a, b) => {
+          if ((a.group_position || 0) !== (b.group_position || 0)) return (a.group_position || 0) - (b.group_position || 0);
+          return (a.position || 0) - (b.position || 0);
+        });
+        
+        setCouncilMembers(sortedMain);
+        setRegionalCouncils(sortedRegional);
+        setSettings(settingsData);
       } catch (err) {
         console.error('Ошибка загрузки данных:', err);
       } finally {
@@ -94,8 +111,8 @@ const About = () => {
   if (loading) return <div className="loading">Загрузка...</div>;
 
   return (
-    <div className="about">
-      <h1 className="page-title">О совете</h1>
+    <div className="about container">
+      <h1 className="page-title">О Совете</h1>
 
       <div className="tabs">
         <button
@@ -135,107 +152,75 @@ const About = () => {
                   <h3>Заместители Председателя</h3>
                   <p>Координация работы Совета по направлениям и задачам</p>
                 </div>
-                {showZam && (
-                  <div className="modal-overlay" onClick={() => setShowZam(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                      <button className="close-button" onClick={() => setShowZam(false)}>&times;</button>
-                      <h2>Состав Заместителей Председателя</h2>
-                      <li>
-                        <strong>Буровцев Владимир Викторович</strong> — заместитель председателя Совета ректоров вузов Дальневосточного федерального округа,<br />
-                        председатель Совета ректоров вузов Хабаровского края, Еврейской автономной области, Магаданской и Сахалинской областей,<br />
-                        ректор Дальневосточного государственного университета путей сообщения.
-                      </li>
-                      <li>
-                        <strong>Николаев Анатолий Николаевич</strong> — заместитель председателя Совета ректоров вузов Дальневосточного федерального округа,<br />
-                        председатель Совета ректоров вузов Республики Саха (Якутия),<br />
-                        ректор Северо-Восточного федерального университета им. М.К. Аммосова.
-                      </li>
-                    </div>
-                  </div>
-                )}
-                <div className="structure-item clickable" onClick={() => setShowSecretariat(true)}>
-                  <h3>Секретариат</h3>
-                  <p>Организационное обеспечение деятельности Совета</p>
-                </div>
-                {showSecretariat && (
-                  <div className="modal-overlay" onClick={() => setShowSecretariat(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                      <button className="close-button" onClick={() => setShowSecretariat(false)}>&times;</button>
-                      <h2>Состав Секретариата</h2>
-                      <ul className="secretariat-list">
-                        <li>
-                          <strong>Гридасов Александр Валентинович</strong> — Ученый секретарь<br />
-                          <span className="contact-info"><em>gridasov.av@dvfu.ru +7 (423) 265-24-24 Доб. 2123</em></span>
-                        </li>
-                        <li>
-                          <strong>Юсипов Евгений Ансарович</strong> — Технический секретарь<br />
-                          <span className="contact-info"><em>yusipov.ea@dvfu.ru +7 (423) 265-24-24 Доб. 2716</em></span>
-                        </li>
-                        <li>
-                          <strong>Фомен Дарья Андреевна</strong><br />
-                          <span className="contact-info"><em>fomen.dan@dvfu.ru +7 (423) 265-24-24 Доб. 2332</em></span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
+                
                 <div className="structure-item clickable" onClick={() => setShowPrezidium(true)}>
                   <h3>Президиум</h3>
                   <p>Ректоры высших учебных заведений ДФО</p>
                 </div>
-                {showPrezidium && (
-                  <div className="modal-overlay" onClick={() => setShowPrezidium(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                      <button className="close-button" onClick={() => setShowPrezidium(false)}>&times;</button>
-                      <h2>Состав Президиума </h2>
-                      <ul className="secretariat-list">
-                        <li>
-                          <strong>Коробец Борис Николаевич</strong><br />
-                          председатель Совета ректоров вузов Дальневосточного федерального округа,<br />
-                          ректор Дальневосточного федерального университета.
-                        </li>
-                        <li>
-                          <strong>Буровцев Владимир Викторович</strong><br />
-                          заместитель председателя Совета ректоров вузов Дальневосточного федерального округа,<br />
-                          председатель Совета ректоров вузов Хабаровского края, Еврейской автономной области, Магаданской и Сахалинской областей,<br />
-                          ректор Дальневосточного государственного университета путей сообщения.
-                        </li>
-                        <li>
-                          <strong>Николаев Анатолий Николаевич</strong><br />
-                          заместитель председателя Совета ректоров вузов Дальневосточного федерального округа,<br />
-                          председатель Совета ректоров вузов Республики Саха (Якутия),<br />
-                          ректор Северо-Восточного федерального университета им. М.К. Аммосова.
-                        </li>
-                        <li>
-                          <strong>Левков Сергей Андреевич</strong><br />
-                          председатель Совета ректоров вузов Камчатского края,<br />
-                          ректор Камчатского государственного технического университета.
-                        </li>
-                        <li>
-                          <strong>Мартыненко Оксана Олеговна</strong><br />
-                          председатель Совета ректоров вузов Забайкальского края,<br />
-                          ректор Забайкальского государственного университета.
-                        </li>
-                        <li>
-                          <strong>Перова Елена Юрьевна</strong><br />
-                          председатель Совета ректоров вузов Республики Бурятия,<br />
-                          ректор Восточно-Сибирского государственного института культуры.
-                        </li>
-                        <li>
-                          <strong>Тихончук Павел Викторович</strong><br />
-                          председатель Совета ректоров вузов Амурской области,<br />
-                          ректор Дальневосточного государственного аграрного университета.
-                        </li>
-                        <li>
-                          <strong>Стегний Кирилл Владимирович</strong><br />
-                          председатель Совета ректоров вузов Приморского края,<br />
-                          и.о. ректора Тихоокеанского государственного медицинского университета.
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
+
+                <div className="structure-item clickable" onClick={() => setShowSecretariat(true)}>
+                  <h3>Секретариат</h3>
+                  <p>Организационное обеспечение деятельности Совета</p>
+                </div>
               </div>
+
+              {showZam && (
+                <div className="modal-overlay" onClick={() => setShowZam(false)}>
+                  <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <button className="close-button" onClick={() => setShowZam(false)}>&times;</button>
+                    <h2>Состав Заместителей Председателя</h2>
+                    <ul className="secretariat-list">
+                      {settings?.aboutStructure?.zam?.length > 0 ? settings.aboutStructure.zam.map((item, idx) => (
+                        <li key={idx} dangerouslySetInnerHTML={{ __html: item.replace(/\n/g, '<br />') }} />
+                      )) : (
+                        <>
+                          <li><strong>Буровцев Владимир Викторович</strong> — заместитель председателя Совета ректоров вузов Дальневосточного федерального округа...</li>
+                          <li><strong>Николаев Анатолий Николаевич</strong> — заместитель председателя Совета ректоров вузов Дальневосточного федерального округа...</li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {showPrezidium && (
+                <div className="modal-overlay" onClick={() => setShowPrezidium(false)}>
+                  <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <button className="close-button" onClick={() => setShowPrezidium(false)}>&times;</button>
+                    <h2>Состав Президиума </h2>
+                    <ul className="secretariat-list">
+                      {settings?.aboutStructure?.prezidium?.length > 0 ? settings.aboutStructure.prezidium.map((item, idx) => (
+                        <li key={idx} dangerouslySetInnerHTML={{ __html: item.replace(/\n/g, '<br />') }} />
+                      )) : (
+                        <li>Данные загружаются или не установлены</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {showSecretariat && (
+                <div className="modal-overlay" onClick={() => setShowSecretariat(false)}>
+                  <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <button className="close-button" onClick={() => setShowSecretariat(false)}>&times;</button>
+                    <h2>Состав Секретариата</h2>
+                    <ul className="secretariat-list">
+                      {settings?.aboutStructure?.secretariatMembers?.length > 0 ? settings.aboutStructure.secretariatMembers.map((item, idx) => (
+                        <li key={idx}>
+                          <strong>{item.name}</strong> {item.role ? `— ${item.role}` : ''}<br />
+                          <span className="contact-info"><em>{item.email} {item.phone}</em></span>
+                        </li>
+                      )) : (
+                        <>
+                          <li><strong>Гридасов Александр Валентинович</strong> — Ученый секретарь<br /><span className="contact-info"><em>gridasov.av@dvfu.ru +7 (423) 265-24-24 Доб. 2123</em></span></li>
+                          <li><strong>Юсипов Евгений Ансарович</strong> — Технический секретарь<br /><span className="contact-info"><em>yusipov.ea@dvfu.ru +7 (423) 265-24-24 Доб. 2716</em></span></li>
+                          <li><strong>Фомен Дарья Андреевна</strong><br /><span className="contact-info"><em>fomen.dan@dvfu.ru +7 (423) 265-24-24 Доб. 2332</em></span></li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -272,7 +257,7 @@ const About = () => {
                         <tr key={index}>
                           <td>{council.organization}</td>
                           <td>
-                            {council.chairman}<br /><em>{council.position}</em>
+                            {council.chairman}<br /><em>{council.position_name}</em>
                           </td>
                           <td>{council.phone}</td>
                           <td>{council.email}</td>
@@ -297,9 +282,9 @@ const About = () => {
             {(() => {
               const unitedRegions = [
                 'Хабаровский край',
-                'Еврейская автономная область',
                 'Магаданская область',
-                'Сахалинская область'
+                'Сахалинская область',
+                'Еврейская автономная область'
               ];
               const unitedName = 'Хабаровский край, Еврейская АО, Магаданская и Сахалинская области';
 
@@ -356,7 +341,7 @@ const About = () => {
                               <tr key={index}>
                                 <td>{council.organization}</td>
                                 <td>
-                                  {council.chairman}<br /><em>{council.position}</em>
+                                  {council.chairman}<br /><em>{council.position_name}</em>
                                 </td>
                                 <td>{council.phone}</td>
                                 <td>{council.email}</td>

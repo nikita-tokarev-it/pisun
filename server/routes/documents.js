@@ -1,63 +1,77 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const { readDb, writeDb } = require('../utils/db');
+const { db } = require('../utils/db');
 const { authMiddleware, roleMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
 const adminRouter = express.Router();
 
-router.get('/', (req, res) => {
-  const db = readDb();
-  res.json(db.documents.filter(i => i.published));
+router.get('/', async (req, res) => {
+  try {
+    const items = await db.get('documents', null, { published: true });
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 adminRouter.use(authMiddleware, roleMiddleware(['editor', 'admin']));
 
-adminRouter.get('/', (req, res) => {
-  const db = readDb();
-  res.json(db.documents);
+adminRouter.get('/', async (req, res) => {
+  try {
+    const items = await db.get('documents');
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.post('/', (req, res) => {
-  const db = readDb();
-  const now = new Date().toISOString();
-  const item = {
-    id: uuidv4(),
-    category: req.body.category,
-    title: req.body.title,
-    file: req.body.file || '',
-    date: req.body.date,
-    published: req.body.published !== undefined ? req.body.published : true,
-    createdAt: now,
-    updatedAt: now,
-  };
-  db.documents.push(item);
-  writeDb(db);
-  res.status(201).json(item);
+adminRouter.post('/', async (req, res) => {
+  try {
+    const now = new Date().toISOString();
+    const item = {
+      id: uuidv4(),
+      category: req.body.category,
+      title: req.body.title,
+      file: req.body.file || '',
+      date: req.body.date,
+      published: req.body.published !== undefined ? req.body.published : true,
+      createdAt: now,
+      updatedAt: now,
+    };
+    const result = await db.insert('documents', item);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.put('/:id', (req, res) => {
-  const db = readDb();
-  const index = db.documents.findIndex(i => i.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: 'Не найдено' });
-  db.documents[index] = {
-    ...db.documents[index],
-    ...req.body,
-    id: db.documents[index].id,
-    createdAt: db.documents[index].createdAt,
-    updatedAt: new Date().toISOString(),
-  };
-  writeDb(db);
-  res.json(db.documents[index]);
+adminRouter.put('/:id', async (req, res) => {
+  try {
+    const existing = await db.get('documents', req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Не найдено' });
+
+    const updatedItem = {
+      ...req.body,
+      updatedAt: new Date().toISOString(),
+    };
+    const result = await db.update('documents', req.params.id, updatedItem);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.delete('/:id', (req, res) => {
-  const db = readDb();
-  const index = db.documents.findIndex(i => i.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: 'Не найдено' });
-  db.documents.splice(index, 1);
-  writeDb(db);
-  res.json({ message: 'Удалено' });
+adminRouter.delete('/:id', async (req, res) => {
+  try {
+    const existing = await db.get('documents', req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Не найдено' });
+
+    await db.delete('documents', req.params.id);
+    res.json({ message: 'Удалено' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = { router, adminRouter };

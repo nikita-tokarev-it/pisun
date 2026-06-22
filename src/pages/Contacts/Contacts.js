@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { getSettings } from '../../api/settings';
-import { getCouncils } from '../../api/councils';
 import './Contacts.css';
 
 const Contacts = () => {
   const [secretariat, setSecretariat] = useState(null);
-  const [regionalCouncils, setRegionalCouncils] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [settingsData, councilsData] = await Promise.all([
-          getSettings(),
-          getCouncils()
-        ]);
+        const settingsData = await getSettings();
         setSecretariat(settingsData.secretariat);
-        setRegionalCouncils(councilsData.regionalCouncils || []);
       } catch (err) {
         console.error('Ошибка загрузки данных:', err);
       } finally {
@@ -29,7 +23,7 @@ const Contacts = () => {
   if (loading) return <div className="loading">Загрузка...</div>;
 
   return (
-    <div className="contacts">
+    <div className="contacts container">
       <h1 className="page-title">Контакты</h1>
       
       {secretariat && (
@@ -60,20 +54,35 @@ const Contacts = () => {
                 </div>
                 <div>
                   <strong>Телефон:</strong>
-                  <p>{secretariat.phone}</p>
+                  <div className="phone-list">
+                    {secretariat.phone.split(',').map((phone, idx) => {
+                      const cleanPhone = phone.split('Доб.')[0].trim().replace(/[^\d+]/g, '');
+                      return (
+                        <p key={idx}>
+                          <a href={`tel:${cleanPhone}`} className="contact-link">
+                            {phone.trim()}
+                          </a>
+                        </p>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
               
               <div className="contact-row">
                 <div className="contact-icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#2B5A8E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M22 6L12 13L2 6" stroke="#2B5A8E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#2B5A8E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
                 <div>
                   <strong>Email:</strong>
-                  <p>{secretariat.email}</p>
+                  <p>
+                    <a href={`mailto:${secretariat.email}`} className="contact-link">
+                      {secretariat.email}
+                    </a>
+                  </p>
                 </div>
               </div>
               
@@ -87,6 +96,7 @@ const Contacts = () => {
                 <div>
                   <strong>Время работы:</strong>
                   <p>{secretariat.workingHours}</p>
+                  <span className="timezone-note">(UTC+10)</span>
                 </div>
               </div>
             </div>

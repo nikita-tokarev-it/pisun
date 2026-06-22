@@ -1,70 +1,87 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const { readDb, writeDb } = require('../utils/db');
+const { db } = require('../utils/db');
 const { authMiddleware, roleMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
 const adminRouter = express.Router();
 
-router.get('/', (req, res) => {
-  const db = readDb();
-  res.json(db.pressReleases.filter(i => i.published));
+router.get('/', async (req, res) => {
+  try {
+    const items = await db.get('press_releases', null, { published: true });
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-router.get('/:id', (req, res) => {
-  const db = readDb();
-  const item = db.pressReleases.find(i => i.id === req.params.id && i.published);
-  if (!item) return res.status(404).json({ error: 'Не найдено' });
-  res.json(item);
+router.get('/:id', async (req, res) => {
+  try {
+    const item = await db.get('press_releases', req.params.id);
+    if (!item || !item.published) return res.status(404).json({ error: 'Не найдено' });
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 adminRouter.use(authMiddleware, roleMiddleware(['editor', 'admin']));
 
-adminRouter.get('/', (req, res) => {
-  const db = readDb();
-  res.json(db.pressReleases);
+adminRouter.get('/', async (req, res) => {
+  try {
+    const items = await db.get('press_releases');
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.post('/', (req, res) => {
-  const db = readDb();
-  const now = new Date().toISOString();
-  const item = {
-    id: uuidv4(),
-    title: req.body.title,
-    date: req.body.date,
-    description: req.body.description || '',
-    fullContent: req.body.fullContent || '',
-    published: req.body.published !== undefined ? req.body.published : true,
-    createdAt: now,
-    updatedAt: now,
-  };
-  db.pressReleases.push(item);
-  writeDb(db);
-  res.status(201).json(item);
+adminRouter.post('/', async (req, res) => {
+  try {
+    const now = new Date().toISOString();
+    const item = {
+      id: uuidv4(),
+      title: req.body.title,
+      date: req.body.date,
+      description: req.body.description || '',
+      fullContent: req.body.fullContent || '',
+      published: req.body.published !== undefined ? req.body.published : true,
+      createdAt: now,
+      updatedAt: now,
+    };
+    const result = await db.insert('press_releases', item);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.put('/:id', (req, res) => {
-  const db = readDb();
-  const index = db.pressReleases.findIndex(i => i.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: 'Не найдено' });
-  db.pressReleases[index] = {
-    ...db.pressReleases[index],
-    ...req.body,
-    id: db.pressReleases[index].id,
-    createdAt: db.pressReleases[index].createdAt,
-    updatedAt: new Date().toISOString(),
-  };
-  writeDb(db);
-  res.json(db.pressReleases[index]);
+adminRouter.put('/:id', async (req, res) => {
+  try {
+    const existing = await db.get('press_releases', req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Не найдено' });
+
+    const updatedItem = {
+      ...req.body,
+      updatedAt: new Date().toISOString(),
+    };
+    const result = await db.update('press_releases', req.params.id, updatedItem);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.delete('/:id', (req, res) => {
-  const db = readDb();
-  const index = db.pressReleases.findIndex(i => i.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: 'Не найдено' });
-  db.pressReleases.splice(index, 1);
-  writeDb(db);
-  res.json({ message: 'Удалено' });
+adminRouter.delete('/:id', async (req, res) => {
+  try {
+    const existing = await db.get('press_releases', req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Не найдено' });
+
+    await db.delete('press_releases', req.params.id);
+    res.json({ message: 'Удалено' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = { router, adminRouter };

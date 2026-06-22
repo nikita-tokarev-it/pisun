@@ -1,77 +1,92 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const { readDb, writeDb } = require('../utils/db');
+const { db } = require('../utils/db');
 const { authMiddleware, roleMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
 const adminRouter = express.Router();
 
 // Public: get published events
-router.get('/', (req, res) => {
-  const db = readDb();
-  const events = db.events.filter(e => e.published);
-  res.json(events);
+router.get('/', async (req, res) => {
+  try {
+    const events = await db.get('events', null, { published: true });
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-router.get('/:id', (req, res) => {
-  const db = readDb();
-  const event = db.events.find(e => e.id === req.params.id && e.published);
-  if (!event) return res.status(404).json({ error: 'Не найдено' });
-  res.json(event);
+router.get('/:id', async (req, res) => {
+  try {
+    const event = await db.get('events', req.params.id);
+    if (!event || !event.published) return res.status(404).json({ error: 'Не найдено' });
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Admin: CRUD
 adminRouter.use(authMiddleware, roleMiddleware(['editor', 'admin']));
 
-adminRouter.get('/', (req, res) => {
-  const db = readDb();
-  res.json(db.events);
+adminRouter.get('/', async (req, res) => {
+  try {
+    const events = await db.get('events');
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.post('/', (req, res) => {
-  const db = readDb();
-  const now = new Date().toISOString();
-  const newEvent = {
-    id: uuidv4(),
-    type: req.body.type || 'news',
-    title: req.body.title,
-    date: req.body.date,
-    image: req.body.image || '',
-    description: req.body.description || '',
-    fullContent: req.body.fullContent || '',
-    published: req.body.published !== undefined ? req.body.published : true,
-    createdAt: now,
-    updatedAt: now,
-  };
-  db.events.push(newEvent);
-  writeDb(db);
-  res.status(201).json(newEvent);
+adminRouter.post('/', async (req, res) => {
+  try {
+    const now = new Date().toISOString();
+    const newEvent = {
+      id: uuidv4(),
+      type: req.body.type || 'news',
+      title: req.body.title,
+      date: req.body.date,
+      image: req.body.image || '',
+      description: req.body.description || '',
+      fullContent: req.body.fullContent || '',
+      published: req.body.published !== undefined ? req.body.published : true,
+      createdAt: now,
+      updatedAt: now,
+    };
+    const result = await db.insert('events', newEvent);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.put('/:id', (req, res) => {
-  const db = readDb();
-  const index = db.events.findIndex(e => e.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: 'Не найдено' });
+adminRouter.put('/:id', async (req, res) => {
+  try {
+    const existing = await db.get('events', req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Не найдено' });
 
-  db.events[index] = {
-    ...db.events[index],
-    ...req.body,
-    id: db.events[index].id,
-    createdAt: db.events[index].createdAt,
-    updatedAt: new Date().toISOString(),
-  };
-  writeDb(db);
-  res.json(db.events[index]);
+    const updatedEvent = {
+      ...req.body,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    const result = await db.update('events', req.params.id, updatedEvent);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-adminRouter.delete('/:id', (req, res) => {
-  const db = readDb();
-  const index = db.events.findIndex(e => e.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: 'Не найдено' });
+adminRouter.delete('/:id', async (req, res) => {
+  try {
+    const existing = await db.get('events', req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Не найдено' });
 
-  db.events.splice(index, 1);
-  writeDb(db);
-  res.json({ message: 'Удалено' });
+    await db.delete('events', req.params.id);
+    res.json({ message: 'Удалено' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = { router, adminRouter };

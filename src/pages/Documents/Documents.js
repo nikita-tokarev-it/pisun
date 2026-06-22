@@ -40,14 +40,14 @@ const Documents = () => {
   }
 
   return (
-    <div className="documents">
+    <div className="documents container">
       <h1 className="page-title">Документы</h1>
 
       <div className="documents-intro">
         <p>
           В данном разделе представлена информация о Совете ректоров вузов
           Дальневосточного федерального округа, учредительные документы, история создания,
-          положение, устав и решения Совета.
+          положение и устав.
         </p>
       </div>
 

@@ -3,7 +3,7 @@ import { getAdminDocuments, createDocument, updateDocument, deleteDocument } fro
 import { formatDate } from '../../../utils/formatters';
 import '../EventsManager/EventsManager.css';
 
-const CATEGORIES = ['История', 'Учредительные документы', 'Решения Совета'];
+const CATEGORIES = ['История', 'Учредительные документы'];
 
 const DocumentsManager = () => {
   const [documents, setDocuments] = useState([]);

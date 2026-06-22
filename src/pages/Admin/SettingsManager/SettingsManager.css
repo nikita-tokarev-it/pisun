@@ -1,79 +1,227 @@
 .settings-manager {
-  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.settings-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .settings-section {
   background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
+  padding: 32px 40px;
+  border-radius: var(--admin-radius);
+  box-shadow: var(--admin-shadow);
+  border: 1px solid var(--admin-border);
 }
 
 .settings-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--admin-blue-dark);
   margin-top: 0;
-  border-bottom: 2px solid #2b5a8e;
-  padding-bottom: 10px;
-  color: #2b5a8e;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E2E8F0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  background: #F8FAFC;
+  padding: 6px;
+  border-radius: var(--admin-radius);
+  margin-bottom: 30px;
+  width: fit-content;
+  border: 1px solid var(--admin-border);
+}
+
+.admin-tabs button {
+  padding: 10px 24px;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--admin-text-light);
+  border-radius: calc(var(--admin-radius) - 2px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-tabs button:hover {
+  color: var(--admin-blue-mid);
+}
+
+.admin-tabs button.active {
+  background: var(--admin-blue-dark);
+  color: white;
+}
+
+/* Grid Layouts for inputs */
+.input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--admin-text-main);
+  margin-bottom: 8px;
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
 }
 
-.form-group input,
-.form-group textarea {
+.form-group input, 
+.form-group textarea,
+.list-item-edit input,
+.list-item-edit-large textarea,
+.list-item-edit-group input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 12px 16px;
+  border: 1px solid #CBD5E1;
+  border-radius: var(--admin-radius);
+  font-size: 14px;
+  font-family: inherit;
+  background-color: #FFFFFF;
+  color: var(--admin-text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
-.paragraph-item {
+.form-group input:focus, 
+.form-group textarea:focus,
+.list-item-edit input:focus,
+.list-item-edit-large textarea:focus,
+.list-item-edit-group input:focus {
+  outline: none;
+  border-color: var(--admin-blue-mid);
+  box-shadow: 0 0 0 2px rgba(36, 76, 122, 0.15);
+}
+
+/* List Item Edits */
+.list-item-edit, 
+.list-item-edit-large {
   display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--admin-radius);
 }
 
-.paragraph-item textarea {
+.list-item-edit-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 20px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--admin-radius);
+  position: relative;
+}
+
+.list-item-edit-group .btn-remove {
+  grid-column: span 2;
+  margin-top: 8px;
+  width: fit-content;
+  justify-self: end;
+}
+
+.list-item-edit input, 
+.list-item-edit-large textarea {
   flex: 1;
-}
-
-.btn-remove {
-  background: #f44336;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
+  margin: 0;
 }
 
 .btn-add {
-  background: #4caf50;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 4px;
+  margin-top: 16px;
+  background: #F8FAFC;
+  color: var(--admin-blue-mid);
+  border: 1px dashed #CBD5E1;
+  padding: 12px;
+  width: 100%;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--admin-radius);
   cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.btn-save {
-  background: #2b5a8e;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
+.btn-add:hover {
+  background: #F1F5F9;
+  border-color: var(--admin-blue-mid);
 }
 
-.btn-save:hover {
-  background: #1e4976;
+.btn-remove {
+  padding: 10px 16px;
+  background: #FFFFFF;
+  border: 1px solid #F87171;
+  color: #C12A2A;
+  border-radius: var(--admin-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-remove:hover {
+  background: #FEF2F2;
+  border-color: #DC2626;
+}
+
+.sticky-save {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: auto;
+  min-width: 250px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 16px 32px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  border-radius: var(--admin-radius);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .input-group {
+    grid-template-columns: 1fr;
+  }
+  .list-item-edit-group {
+    grid-template-columns: 1fr;
+  }
+  .list-item-edit-group .btn-remove {
+    grid-column: span 1;
+  }
+  .sticky-save {
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    width: auto;
+    min-width: 0;
+  }
+  .settings-section {
+    padding: 24px 20px;
+  }
 }

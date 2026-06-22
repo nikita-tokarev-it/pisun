@@ -29,22 +29,22 @@ const AdminLayout = ({ children }) => {
           <NavLink to="/admin/events" className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}>
             Мероприятия и новости
           </NavLink>
-          <NavLink to="/admin/press" className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}>
-            Пресс-материалы
-          </NavLink>
           <NavLink to="/admin/documents" className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}>
             Документы
           </NavLink>
           <NavLink to="/admin/councils" className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}>
             Управление Советами
           </NavLink>
+          <NavLink to="/admin/map" className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}>
+            Интерактивная карта
+          </NavLink>
+          <NavLink to="/admin/settings" className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}>
+            Настройки сайта
+          </NavLink>
           {user?.role === 'admin' && (
             <>
               <NavLink to="/admin/users" className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}>
                 Пользователи
-              </NavLink>
-              <NavLink to="/admin/settings" className={({ isActive }) => isActive ? 'admin-nav-link active' : 'admin-nav-link'}>
-                Настройки сайта
               </NavLink>
             </>
           )}

@@ -9,7 +9,11 @@
       }
     },
     {
-      "src": "api/**/*.js",
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/auth/login.js",
       "use": "@vercel/node"
     }
   ],
@@ -20,22 +24,62 @@
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
-        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
       ]
     }
   ],
   "rewrites": [
     { "source": "/api/imgur/:path*", "destination": "https://i.imgur.com/:path*" },
-    { "source": "/api/events/:id", "destination": "/api/events.js?id=:id" },
-    { "source": "/api/press-releases/:id", "destination": "/api/press-releases.js?id=:id" },
-    { "source": "/api/announcements/:id", "destination": "/api/announcements.js?id=:id" },
-    { "source": "/api/admin/events/:id", "destination": "/api/admin/events.js?id=:id" },
-    { "source": "/api/admin/press-releases/:id", "destination": "/api/admin/press-releases.js?id=:id" },
-    { "source": "/api/admin/announcements/:id", "destination": "/api/admin/announcements.js?id=:id" },
-    { "source": "/api/admin/photos/:id", "destination": "/api/admin/photos.js?id=:id" },
-    { "source": "/api/admin/videos/:id", "destination": "/api/admin/videos.js?id=:id" },
-    { "source": "/api/admin/documents/:id", "destination": "/api/admin/documents.js?id=:id" },
-    { "source": "/api/admin/users/:id", "destination": "/api/admin/users.js?id=:id" },
+    
+    { "source": "/api/auth/login", "destination": "/api/auth/login.js" },
+
+    { "source": "/api/events/:id", "destination": "/api/public_handler.js?collection=events&id=:id" },
+    { "source": "/api/events", "destination": "/api/public_handler.js?collection=events" },
+    
+    { "source": "/api/press-releases/:id", "destination": "/api/public_handler.js?collection=pressReleases&id=:id" },
+    { "source": "/api/press-releases", "destination": "/api/public_handler.js?collection=pressReleases" },
+    
+    { "source": "/api/announcements/:id", "destination": "/api/public_handler.js?collection=announcements&id=:id" },
+    { "source": "/api/announcements", "destination": "/api/public_handler.js?collection=announcements" },
+    
+    { "source": "/api/photos", "destination": "/api/public_handler.js?collection=photos" },
+    { "source": "/api/videos", "destination": "/api/public_handler.js?collection=videos" },
+    { "source": "/api/documents", "destination": "/api/public_handler.js?collection=documents" },
+    { "source": "/api/councils", "destination": "/api/public_handler.js?collection=councils" },
+    { "source": "/api/map", "destination": "/api/public_handler.js?collection=mapData" },
+    { "source": "/api/settings", "destination": "/api/public_handler.js?collection=settings" },
+
+    { "source": "/api/admin/events/:id", "destination": "/api/admin_handler.js?collection=events&id=:id" },
+    { "source": "/api/admin/events", "destination": "/api/admin_handler.js?collection=events" },
+    
+    { "source": "/api/admin/press-releases/:id", "destination": "/api/admin_handler.js?collection=pressReleases&id=:id" },
+    { "source": "/api/admin/press-releases", "destination": "/api/admin_handler.js?collection=pressReleases" },
+    
+    { "source": "/api/admin/announcements/:id", "destination": "/api/admin_handler.js?collection=announcements&id=:id" },
+    { "source": "/api/admin/announcements", "destination": "/api/admin_handler.js?collection=announcements" },
+    
+    { "source": "/api/admin/photos/:id", "destination": "/api/admin_handler.js?collection=photos&id=:id" },
+    { "source": "/api/admin/photos", "destination": "/api/admin_handler.js?collection=photos" },
+    
+    { "source": "/api/admin/videos/:id", "destination": "/api/admin_handler.js?collection=videos&id=:id" },
+    { "source": "/api/admin/videos", "destination": "/api/admin_handler.js?collection=videos" },
+    
+    { "source": "/api/admin/documents/:id", "destination": "/api/admin_handler.js?collection=documents&id=:id" },
+    { "source": "/api/admin/documents", "destination": "/api/admin_handler.js?collection=documents" },
+    
+    { "source": "/api/admin/users/:id", "destination": "/api/admin_handler.js?collection=users&id=:id" },
+    { "source": "/api/admin/users", "destination": "/api/admin_handler.js?collection=users" },
+    
+    { "source": "/api/admin/councils/main/:id", "destination": "/api/admin_handler.js?collection=councils&type=main&id=:id" },
+    { "source": "/api/admin/councils/main", "destination": "/api/admin_handler.js?collection=councils&type=main" },
+    { "source": "/api/admin/councils/regional/:id", "destination": "/api/admin_handler.js?collection=councils&type=regional&id=:id" },
+    { "source": "/api/admin/councils/regional", "destination": "/api/admin_handler.js?collection=councils&type=regional" },
+    
+    { "source": "/api/admin/map/:id", "destination": "/api/admin_handler.js?collection=mapData&id=:id" },
+    { "source": "/api/admin/map", "destination": "/api/admin_handler.js?collection=mapData" },
+    
+    { "source": "/api/admin/settings", "destination": "/api/admin_handler.js?collection=settings" },
+
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

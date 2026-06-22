@@ -38,7 +38,7 @@ const Events = () => {
   }
 
   return (
-    <div className="events">
+    <div className="events container">
       <h1 className="page-title">Мероприятия и новости</h1>
 
       <div className="filter-buttons">

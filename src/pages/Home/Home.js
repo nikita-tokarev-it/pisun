@@ -35,51 +35,55 @@ const Home = () => {
     <div className="home">
       {greeting && (
         <section className="greeting-section">
-          <div className="greeting-content">
-            <div className="rector-photo">
-              <img
-                src={greeting.photo}
-                alt="Председатель Совета"
-              />
-            </div>
+          <div className="container">
+            <div className="greeting-content">
+              <div className="rector-photo">
+                <img
+                  src={greeting.photo}
+                  alt="Председатель Совета"
+                />
+              </div>
 
-            <div className="greeting-text">
-              <h2 className="greeting-title">{greeting.title}</h2>
+              <div className="greeting-text">
+                <h2 className="greeting-title">{greeting.title}</h2>
 
-              {greeting.paragraphs.map((p, idx) => (
-                <p key={idx} className="greeting-paragraph">{p}</p>
-              ))}
+                {greeting.paragraphs.map((p, idx) => (
+                  <p key={idx} className="greeting-paragraph">{p}</p>
+                ))}
 
-              <p className="greeting-signature">
-                {greeting.signature}
-              </p>
+                <p className="greeting-signature">
+                  {greeting.signature}
+                </p>
+              </div>
             </div>
           </div>
         </section>
       )}
 
       <section className="news-section">
-        <h2 className="section-title">Мероприятия и новости</h2>
+        <div className="container">
+          <h2 className="section-title">Мероприятия и новости</h2>
 
-        <div className="news-grid">
-          {news.map(item => (
-            <article key={item.id} className="news-card">
-              <div className="news-image">
-                <img src={item.image} alt={item.title} />
-              </div>
-              <div className="news-content">
-                <h3>{item.title}</h3>
-                <p className="news-date">{formatDate(item.date)}</p>
-                <p>{item.description}</p>
-                <button
-                  className="read-more-btn"
-                  onClick={() => navigate(`/events/${item.id}`)}
-                >
-                  Читать полностью
-                </button>
-              </div>
-            </article>
-          ))}
+          <div className="news-grid">
+            {news.map(item => (
+              <article key={item.id} className="news-card">
+                <div className="news-image">
+                  <img src={item.image} alt={item.title} />
+                </div>
+                <div className="news-content">
+                  <h3>{item.title}</h3>
+                  <p className="news-date">{formatDate(item.date)}</p>
+                  <p>{item.description}</p>
+                  <button
+                    className="read-more-btn"
+                    onClick={() => navigate(`/events/${item.id}`)}
+                  >
+                    Читать полностью
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
     </div>

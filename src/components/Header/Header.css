@@ -1,112 +1,118 @@
 .header {
-  background: linear-gradient(135deg, #1e4976 0%, #2d5f8d 50%, #1e4976 100%);
-  color: white;
-  padding: 20px 0;
-  min-height: 400px;
+  background-color: var(--color-primary-dark);
+  color: #FFFFFF;
+  padding: 0;
+  border-bottom: 4px solid var(--color-primary-mid);
 }
 
-.header-content {
-  max-width: 1400px;
+.top-bar {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 0;
+}
+
+.top-bar-content {
+  max-width: var(--container-width);
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding: 0 40px;
+  align-items: center;
+  padding: 0 var(--container-padding);
+}
+
+.header-content {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  padding: 0 var(--container-padding);
 }
 
 .header-left {
   flex: 1;
-  padding-right: 40px;
+  text-align: left;
+  min-width: 300px;
 }
 
 .rsr-link {
-  color: white;
+  color: #A3B8CC;
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  display: inline-block;
-  margin-bottom: 30px;
-  transition: opacity 0.3s;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: color 0.2s ease;
 }
 
 .rsr-link:hover {
-  opacity: 0.8;
-  text-decoration: underline;
+  color: #FFFFFF;
 }
 
 .header-title {
-  font-size: 42px;
-  font-weight: 700;
-  line-height: 1.2;
-  margin: 0 0 30px 0;
+  font-size: clamp(24px, 4vw, 42px); /* Responsive font size */
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0;
   text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.header-description {
-  font-size: 16px;
-  line-height: 1.6;
-  margin: 0 0 30px 0;
-  max-width: 600px;
-  opacity: 0.95;
-}
-
-.read-more-btn {
-  display: inline-block;
-  color: white;
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 500;
-  padding: 0;
-  border-bottom: 1px solid white;
-  transition: opacity 0.3s;
-}
-
-.read-more-btn:hover {
-  opacity: 0.7;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
 }
 
 .header-right {
-  flex: 1;
+  flex: 1.5;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  width: 100%;
 }
 
 .main-nav {
   display: flex;
-  gap: 30px;
-  margin-bottom: 30px;
-  flex-wrap: nowrap;
+  gap: clamp(12px, 2vw, 24px);
+  flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .nav-link {
-  color: white;
+  color: #FFFFFF;
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: opacity 0.3s;
+  transition: color 0.2s ease;
   white-space: nowrap;
+  padding: 8px 0;
 }
 
 .nav-link:hover {
-  opacity: 0.7;
+  color: #A3B8CC;
 }
 
+.nav-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: inherit;
+}
+
+/* Map specific to Header */
 .map-container {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  height: 320px;
+  max-width: 720px;
+  height: clamp(300px, 35vw, 460px);
 }
 
 .rf-map {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: visible;
+  background: transparent;
 }
 
 .russia-map {
@@ -115,249 +121,233 @@
 }
 
 .map-region {
-  fill: #d7dee9;
-  stroke: #b4bcc9;
-  stroke-width: 0.6;
-  transition: fill 0.3s ease, opacity 0.3s ease;
+  fill: #D7DEE9;
+  stroke: #1A3A5F;
+  stroke-width: 0.5;
+  transition: fill 0.2s ease;
 }
 
 .map-region--dfo {
-  fill: #8e2b2b;
-  stroke: #1e3a52;
+  fill: #C12A2A; /* RED active zones */
+  stroke: #FFFFFF;
+  stroke-width: 1;
   cursor: pointer;
 }
 
 .map-region--dfo:hover,
 .map-region--dfo:focus-visible {
-  fill: #c11f1f;
+  fill: #E33434;
 }
 
-.map-region--dfo:focus-visible {
-  outline: 3px solid #f6e72d;
-  outline-offset: 2px;
-}
-
-.map-tooltip {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(-50%, -120%);
-  background: rgba(12, 31, 58, 0.92);
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  pointer-events: none;
-  white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-  z-index: 5;
-}
-
-.map-tooltip::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -6px;
-  transform: translateX(-50%);
-  border-width: 6px 6px 0 6px;
-  border-style: solid;
-  border-color: rgba(12, 31, 58, 0.92) transparent transparent transparent;
-}
-
-/* Модальное окно для регионов */
+/* Modals */
 .region-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(15, 23, 42, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  backdrop-filter: blur(4px);
 }
 
 .region-modal {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-sm);
   padding: 40px;
   max-width: 600px;
   width: 90%;
-  max-height: 80vh;
+  max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  box-shadow: var(--shadow-float);
+  border: 1px solid var(--color-border-light);
 }
 
 .region-modal-close {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 16px;
+  right: 16px;
   background: transparent;
   border: none;
-  font-size: 32px;
-  color: #666;
-  cursor: pointer;
+  font-size: 28px;
+  color: var(--color-text-muted);
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.3s, color 0.3s;
+  transition: color 0.2s;
 }
 
 .region-modal-close:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  color: var(--color-primary-dark);
 }
 
 .region-modal h2 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1e4976;
-  margin: 0 0 20px 0;
+  font-size: 24px;
+  color: var(--color-primary-dark);
+  margin-bottom: 24px;
   padding-right: 40px;
-}
-
-.region-modal-content {
-  color: #333;
+  border-bottom: 2px solid var(--color-border-light);
+  padding-bottom: 12px;
 }
 
 .region-info {
-  font-size: 16px;
-  line-height: 1.7;
-  margin: 0 0 25px 0;
-  color: #555;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-main);
+  margin-bottom: 24px;
 }
 
 .region-universities {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  margin: 25px 0;
+  background: var(--color-bg-body);
+  padding: 24px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+  border: 1px solid var(--color-border-light);
 }
 
 .region-universities h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e4976;
-  margin: 0 0 15px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-primary-dark);
+  margin-bottom: 16px;
 }
 
 .region-universities ul {
-  margin: 0;
   padding-left: 20px;
 }
 
 .region-universities li {
-  font-size: 15px;
-  line-height: 1.8;
-  color: #333;
-  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
 }
 
 .region-website-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: #2B5A8E;
-  color: white;
-  text-decoration: none;
+  background: var(--color-primary-mid);
+  color: #FFFFFF;
   padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 500;
-  transition: background-color 0.3s, transform 0.2s;
-  margin-top: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
 }
 
 .region-website-link:hover {
-  background: #1e4976;
-  transform: translateX(5px);
+  background: var(--color-primary-dark);
+  color: #FFFFFF;
 }
 
-/* Мобильная адаптация модального окна */
-@media (max-width: 768px) {
-  .region-modal {
-    padding: 30px 20px;
-    max-width: 95%;
-  }
-  
-  .region-modal h2 {
-    font-size: 22px;
-    padding-right: 30px;
-  }
-  
-  .region-info {
-    font-size: 15px;
-  }
+/* Press Modal specific styles */
+.press-contact-card {
+  background: var(--color-bg-body);
+  padding: 24px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-light);
 }
 
-/* Адаптивность */
-@media (max-width: 1200px) {
+.press-contact-card h3 {
+  font-size: 16px;
+  color: var(--color-primary-dark);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.press-contact-item {
+  margin-bottom: 16px;
+}
+
+.press-contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.press-contact-item strong {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.press-contact-item p {
+  font-size: 15px;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.map-tooltip {
+  position: absolute;
+  background: #1A3A5F;
+  color: #FFFFFF;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  z-index: 5;
+  transform: translate(-50%, -120%);
+}
+
+@media (max-width: 1024px) {
   .header-content {
     flex-direction: column;
     align-items: center;
+    gap: 40px;
+    padding-top: 40px;
+    padding-bottom: 40px;
   }
-  
   .header-left {
-    padding-right: 0;
     text-align: center;
-    margin-bottom: 40px;
+    min-width: auto;
   }
-  
   .header-right {
     align-items: center;
   }
-  
   .main-nav {
     justify-content: center;
   }
-  
-  .map-container {
-    width: 100%;
-    max-width: 600px;
+  .top-bar-content {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    padding-top: 16px;
+    padding-bottom: 16px;
   }
 }
 
 @media (max-width: 768px) {
   .header-title {
-    font-size: 28px;
+    font-size: 26px;
   }
-  
   .main-nav {
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
+    gap: 12px;
   }
-  
+  .nav-link {
+    font-size: 12px;
+  }
   .map-container {
-    height: 200px;
+    display: none;
+  }
+  .region-modal {
+    padding: 24px 20px;
+  }
+  .region-modal h2 {
+    font-size: 20px;
+    padding-right: 32px;
   }
 }
-
